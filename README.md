@@ -1,9 +1,61 @@
 ## Internal Link Redirect Crawler
 
+> **Note:** This README is just documentation – it does not automatically set up anything for you. You (or anyone using this script) must follow the steps in **"Setup & installation"** below on your own machine before running `crawler.py`.
+
 This project contains a small crawler (`crawler.py`) that scans a single website for **internal links**, checks them against a **redirects CSV**, and produces two CSV reports:
 
 - **`internal_links.csv`**: every internal link found on the site
 - **`redirect_issues.csv`**: internal links that currently point at URLs that should be updated (because they match a redirect rule)
+
+### Setup & installation
+
+These steps assume macOS or Linux with `python3` available. On Windows, the commands are similar but activation paths differ.
+
+1. **Clone or download this project** and open a terminal in the project root (the folder containing `crawler.py`).
+
+2. **Create and activate a virtual environment** (recommended so you don’t pollute your global Python):
+
+   ```bash
+   cd /path/to/internal-link-crawler
+   python3 -m venv .venv
+   source .venv/bin/activate
+   ```
+
+   On Windows (PowerShell):
+
+   ```powershell
+   python -m venv .venv
+   .venv\Scripts\Activate.ps1
+   ```
+
+3. **Install required Python packages** inside the virtual environment:
+
+   ```bash
+   pip install requests beautifulsoup4
+   ```
+
+4. **Prepare your input files**:
+
+   - A **redirects CSV** for `--redirects-file` with at least columns: `from,to`.
+   - Either:
+     - a **sitemap XML** for `--sitemap` (URL or local file), or
+     - a **text file of URLs** for `--urls-file` (one URL per line).
+
+5. **Run the crawler** from the project root (example):
+
+   ```bash
+   python3 crawler.py \
+     --base-url https://www.example.com \
+     --sitemap sitemap.xml \
+     --redirects-file redirects.csv \
+     --max-pages 2000 \
+     --concurrency 5 \
+     --delay 0.0 \
+     --internal-links-output internal_links.csv \
+     --redirect-issues-output redirect_issues.csv
+   ```
+
+After these steps, you should see `internal_links.csv` and `redirect_issues.csv` created in the project directory.
 
 ### How `crawler.py` works
 
@@ -154,3 +206,4 @@ From this example you can immediately see:
 
 - Which pages (`source_url`) still link to old URLs.
 - Which links should be updated to point directly at the new URLs (`correct_target_url`).
+
